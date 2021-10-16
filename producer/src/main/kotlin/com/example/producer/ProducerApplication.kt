@@ -1,11 +1,11 @@
-package com.example.kotlinkafkatoy
+package com.example.producer
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class KotlinKafkaToyApplication
+class ProducerApplication
 
 fun main(args: Array<String>) {
-    runApplication<KotlinKafkaToyApplication>(*args)
+    runApplication<ProducerApplication>(*args)
 }

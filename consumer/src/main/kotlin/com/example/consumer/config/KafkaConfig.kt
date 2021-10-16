@@ -31,7 +31,6 @@ class KafkaConfig {
     @Primary
     @Bean
     fun consumerFactory(): ConsumerFactory<in String, in String> {
-
         return DefaultKafkaConsumerFactory(consumerProperties())
     }
 
