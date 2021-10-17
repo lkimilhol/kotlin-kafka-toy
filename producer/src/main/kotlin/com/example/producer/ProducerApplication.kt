@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
 
     for (i in 1..10) {
         val key = i % 2
-        var producerRecord : ProducerRecord<String, String> = ProducerRecord("test", key.toString(), "test: $i")
+        var producerRecord : ProducerRecord<String, String> = ProducerRecord("test", key.toString(), "test: $key, $i")
         var future: Future<RecordMetadata> = producer.send(producerRecord)!!
         future.get()
     }
