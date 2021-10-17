@@ -12,7 +12,6 @@ class SampleTopicListener {
 
     @KafkaListener(topics = ["test"])
     fun consume(@Payload data: String) {
-
         log.info("Message: $data")
     }
 }
