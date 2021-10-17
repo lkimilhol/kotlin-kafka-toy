@@ -12,8 +12,9 @@ fun main(args: Array<String>) {
     map["bootstrap.servers"] = "localhost:9092"
     var producer = KafkaProducer<String, String>(map as Map<String, Any>?)
 
-    for (i in 1..100) {
-        var producerRecord : ProducerRecord<String, String> = ProducerRecord("test", "key$i", "test: $i")
+    for (i in 1..10) {
+        val key = i % 2
+        var producerRecord : ProducerRecord<String, String> = ProducerRecord("test", key.toString(), "test: $i")
         var future: Future<RecordMetadata> = producer.send(producerRecord)!!
         future.get()
     }
