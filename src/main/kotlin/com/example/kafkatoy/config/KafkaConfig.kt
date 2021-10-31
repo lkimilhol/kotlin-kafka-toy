@@ -1,5 +1,6 @@
 package com.example.kafkatoy.config
 
+import com.example.kafkatoy.domain.KafkaMessage
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -34,7 +35,7 @@ class KafkaConfig {
     )
 
     @Primary
-    @Bean
+    @Bean("kafkaListenerContainerFactory")
     fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
 
         val containerFactory = ConcurrentKafkaListenerContainerFactory<String, String>()
@@ -70,9 +71,9 @@ class KafkaConfig {
         )
     }
 
-    private val producerOption: SenderOptions<String, String> = SenderOptions.create(producerProperties)
+    private val producerOption: SenderOptions<String, KafkaMessage> = SenderOptions.create(producerProperties)
 
     @Bean
     @ConditionalOnProperty(value = ["application.kafka.enable"], havingValue = "true")
-    fun kafkaProducerTemplate(): ReactiveKafkaProducerTemplate<String, String> = ReactiveKafkaProducerTemplate(producerOption)
+    fun kafkaProducerTemplate(): ReactiveKafkaProducerTemplate<String, KafkaMessage> = ReactiveKafkaProducerTemplate(producerOption)
 }
