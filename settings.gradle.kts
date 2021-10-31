@@ -1,1 +1,1 @@
-rootProject.name = "kotlin-kafka-toy"
+rootProject.name = "kafkatoy"
