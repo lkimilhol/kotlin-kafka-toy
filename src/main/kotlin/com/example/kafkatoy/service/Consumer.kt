@@ -6,13 +6,20 @@ import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Service
+import java.util.concurrent.CountDownLatch
 
 @Service
 class Consumer {
-    val log: Logger = LoggerFactory.getLogger(Consumer::class.java)
+
+    private var messageList = listOf<KafkaMessage>()
 
     @KafkaListener(id = "kafkaMessages", topics = ["test"], containerFactory = "kafkaListenerContainerFactory")
     fun consume(kafkaMessages: List<KafkaMessage>) {
-        kafkaMessages.forEach { kafkaMessage -> println(kafkaMessage.toString()) }
+        messageList = kafkaMessages
+        kafkaMessages.forEach { println(it) }
+    }
+
+    fun getPayload(): List<KafkaMessage> {
+        return messageList
     }
 }
