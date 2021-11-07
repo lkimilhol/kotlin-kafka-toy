@@ -24,7 +24,7 @@ import java.util.*
 @Configuration
 class KafkaConfig {
     private val producerProperties: Map<String, Any> = mapOf(
-        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9093",
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java,
         ProducerConfig.ACKS_CONFIG to "all",
@@ -56,7 +56,7 @@ class KafkaConfig {
         }
 
         return hashMapOf(
-            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9093",
             ConsumerConfig.GROUP_ID_CONFIG to hostName,
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to "true",
             ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
