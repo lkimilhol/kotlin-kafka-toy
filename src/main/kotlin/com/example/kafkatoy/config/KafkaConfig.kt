@@ -1,6 +1,8 @@
 package com.example.kafkatoy.config
 
 import com.example.kafkatoy.domain.KafkaMessage
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -68,4 +70,9 @@ class KafkaConfig {
 
     @Bean
     fun kafkaProducerTemplate(): ReactiveKafkaProducerTemplate<String, KafkaMessage> = ReactiveKafkaProducerTemplate(producerOption)
+
+    @Bean
+    fun objectMapper(): ObjectMapper {
+        return ObjectMapper().registerModule(KotlinModule())
+    }
 }
