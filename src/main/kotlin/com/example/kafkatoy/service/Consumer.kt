@@ -1,6 +1,7 @@
 package com.example.kafkatoy.service
 
 import com.example.kafkatoy.domain.KafkaMessage
+import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -14,8 +15,7 @@ class Consumer {
     private var messageList = listOf<KafkaMessage>()
 
     @KafkaListener(id = "kafkaMessages", topics = ["test"], containerFactory = "kafkaListenerContainerFactory")
-    fun consume(kafkaMessages: List<KafkaMessage>) {
-        messageList = kafkaMessages
+    fun consume(kafkaMessages: ConsumerRecords<String, KafkaMessage>) {
         kafkaMessages.forEach { println(it) }
     }
 

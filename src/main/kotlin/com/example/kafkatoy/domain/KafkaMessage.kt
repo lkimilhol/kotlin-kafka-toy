@@ -1,3 +1,3 @@
 package com.example.kafkatoy.domain
 
-data class KafkaMessage(private val uuid: Long?, private val message: String?)
+data class KafkaMessage(val uuid: Long?, val message: String?)
