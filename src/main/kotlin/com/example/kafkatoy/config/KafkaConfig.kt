@@ -10,12 +10,14 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
-import org.springframework.kafka.core.ConsumerFactory
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.*
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.kafka.listener.ContainerProperties
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer
+import org.springframework.kafka.listener.RecoveringBatchErrorHandler
 import org.springframework.kafka.support.serializer.JsonDeserializer
 import org.springframework.kafka.support.serializer.JsonSerializer
+import org.springframework.util.backoff.FixedBackOff
 import reactor.kafka.sender.SenderOptions
 import java.net.InetAddress
 import java.net.UnknownHostException
@@ -24,7 +26,7 @@ import java.util.*
 @Configuration
 class KafkaConfig {
     private val producerProperties: Map<String, Any> = mapOf(
-        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9093",
+        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java,
         ProducerConfig.ACKS_CONFIG to "all",
@@ -34,9 +36,13 @@ class KafkaConfig {
     fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
 
         val containerFactory = ConcurrentKafkaListenerContainerFactory<String, String>()
+        val recoverer = DeadLetterPublishingRecoverer(kafkaProducerTemplate())
+        val recoveringBackOff = RecoveringBatchErrorHandler(recoverer, FixedBackOff(2L, 1))
+
         containerFactory.consumerFactory = consumerFactory()
         containerFactory.isBatchListener = true
         containerFactory.containerProperties.ackMode = ContainerProperties.AckMode.BATCH
+        containerFactory.setBatchErrorHandler(recoveringBackOff)
 
         return containerFactory
     }
@@ -56,7 +62,7 @@ class KafkaConfig {
         }
 
         return hashMapOf(
-            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9093",
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
             ConsumerConfig.GROUP_ID_CONFIG to hostName,
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to "true",
             ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "latest",
@@ -66,10 +72,10 @@ class KafkaConfig {
         )
     }
 
-    private val producerOption: SenderOptions<String, KafkaMessage> = SenderOptions.create(producerProperties)
+    private val producerFactory: ProducerFactory<String, KafkaMessage> = DefaultKafkaProducerFactory(producerProperties)
 
     @Bean
-    fun kafkaProducerTemplate(): ReactiveKafkaProducerTemplate<String, KafkaMessage> = ReactiveKafkaProducerTemplate(producerOption)
+    fun kafkaProducerTemplate(): KafkaTemplate<String, KafkaMessage> = KafkaTemplate(producerFactory)
 
     @Bean
     fun objectMapper(): ObjectMapper {
