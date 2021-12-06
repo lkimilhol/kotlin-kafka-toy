@@ -4,6 +4,7 @@ import com.example.kafkatoy.domain.KafkaMessage
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
@@ -54,7 +55,6 @@ class KafkaConfig {
 
     @Bean
     fun consumerProperties(): Map<String, Any> {
-
         val hostName = try {
             InetAddress.getLocalHost().hostName + UUID.randomUUID().toString()
         } catch (e: UnknownHostException) {
@@ -81,4 +81,20 @@ class KafkaConfig {
     fun objectMapper(): ObjectMapper {
         return ObjectMapper().registerModule(KotlinModule())
     }
+
+    @Bean
+    fun dltConsumerProperties(): Map<String, Any> {
+        return hashMapOf(
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to "localhost:9092",
+            ConsumerConfig.GROUP_ID_CONFIG to "dlt-consumer-group",
+            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to "true",
+            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
+            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to JsonDeserializer::class.java,
+            JsonDeserializer.TRUSTED_PACKAGES to "*"
+        )
+    }
+
+    @Bean
+    fun kafkaDLTConsumer(): KafkaConsumer<String, KafkaMessage> = KafkaConsumer(dltConsumerProperties())
 }
