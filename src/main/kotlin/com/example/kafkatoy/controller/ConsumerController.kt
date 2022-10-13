@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class ConsumerController(private val consumer: DLTConsumer) {
 
-    @GetMapping("/")
+    @PostMapping("/")
     fun test() {
         consumer.dltConsume()
     }
